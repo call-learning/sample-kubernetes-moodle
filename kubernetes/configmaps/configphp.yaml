@@ -17,16 +17,11 @@ data:
     $CFG->dbtype    = 'pgsql';
     $CFG->dblibrary = 'native';
     $CFG->dbhost    = 'testk8smoodle-db.default.svc.cluster.local';
-    $CFG->dbname    = 'moodle-db';
-    $CFG->dbuser    = 'moodle-user';
+    $CFG->dbname    = 'moodledb';
+    $CFG->dbuser    = getenv('MOODLE_DATABASE_USER');
     $CFG->dbpass    = getenv('MOODLE_DATABASE_PASSWORD');
+    $CFG->dbpersist  = true;
     $CFG->prefix    = 'mdl_';
-    $CFG->dboptions = array (
-      'dbpersist' => 0,
-      'dbport' => '',
-      'dbsocket' => '',
-      'dbcollation' => 'utf8mb4_unicode_ci',
-    );
 
     $CFG->admin     = 'admin';
 

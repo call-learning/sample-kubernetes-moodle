@@ -10,10 +10,10 @@ spec:
     size: 1Gi
   numberOfInstances: 2
   users:
-    moodle-user:  # database owner
+    moodleuser:  # database owner
     - createdb
   databases:
-    moodle-db: moodle-user  # dbname: owner
+    moodledb: moodleuser  # dbname: owner / avoid special chars
   preparedDatabases:
     bar: {}
   postgresql:

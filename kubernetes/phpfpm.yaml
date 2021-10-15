@@ -35,7 +35,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/type: phpfpm
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: moodle-k8s
@@ -56,7 +56,7 @@ spec:
       serviceAccountName: testk8smoodle-moodle-k8s
       initContainers:
         - name: init-moodle-folders
-          image: 'calllearning/ubuntu-phpfpm-moodle:s1.0.1'
+          image: 'calllearning/ubuntu-phpfpm-moodle:s1.0.2'
           command: [ "/bin/bash","-c" ]
           args: [ "init-script.sh --clone --dirs" ]
           env:
@@ -91,7 +91,7 @@ spec:
               readOnly: true
       containers:
         - name:  testk8smoodle-moodle-k8s-phpfpm
-          image: 'calllearning/ubuntu-phpfpm-moodle:s1.0.1'
+          image: 'calllearning/ubuntu-phpfpm-moodle:s1.0.2'
           ports:
             - containerPort: 9000
               protocol: TCP
@@ -107,10 +107,15 @@ spec:
                 configMapKeyRef:
                   name: moodle-values
                   key: domain_name
+            - name: MOODLE_DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: moodleuser.testk8smoodle-db.credentials.postgresql.acid.zalan.do
+                  key: username
             - name: MOODLE_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: moodle-user.testk8smoodle-db.credentials.postgresql.acid.zalan.do
+                  name: moodleuser.testk8smoodle-db.credentials.postgresql.acid.zalan.do
                   key: password
           volumeMounts:
             - mountPath: "/srv/moodle/data"

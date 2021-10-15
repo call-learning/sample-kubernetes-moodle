@@ -76,4 +76,10 @@
             line: "pm.status_path = /status"
           - regexp: "^;?ping.response.?=.+$"
             line: "ping.response = pong"
+          - regexp: "^;?env[MOODLE_DATABASE_USER].?=.+$"
+            line: "env[MOODLE_DATABASE_USER] = $MOODLE_DATABASE_USER"
+          - regexp: "^;?env[MOODLE_DATABASE_PASSWORD].?=.+$"
+            line: "env[MOODLE_DATABASE_PASSWORD] = $MOODLE_DATABASE_PASSWORD"
+          - regexp: "^;?env[MOODLE_DOMAIN_NAME].?=.+$"
+            line: "env[MOODLE_DOMAIN_NAME] = $MOODLE_DOMAIN_NAME"
 

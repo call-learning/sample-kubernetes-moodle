@@ -14,12 +14,12 @@ data:
     global $CFG;
     $CFG = new stdClass();
 
-    $CFG->dbtype    = 'mysqli';
+    $CFG->dbtype    = 'pgsql';
     $CFG->dblibrary = 'native';
-    $CFG->dbhost    = 'testk8smoodle-mysql-db-mysql-master.default.svc.cluster.local';
-    $CFG->dbname    = 'moodle-db';
-    $CFG->dbuser    = 'moodle-user';
-    $CFG->dbpass    = 'My@Passw0rd?%';
+    $CFG->dbhost    = 'testk8smoodle-db.default.svc.cluster.local';
+    $CFG->dbname    = 'moodledb';
+    $CFG->dbuser    = 'moodleuser';
+    $CFG->dbpass    = getenv('MOODLE_DATABASE_PASSWORD');
     $CFG->prefix    = 'mdl_';
     $CFG->dboptions = array (
       'dbpersist' => 0,
@@ -38,10 +38,13 @@ data:
     // On the same shared NFS-HA.
     $CFG->tempdir  = '/srv/moodle/shareddata/tmpdir';
     $CFG->cachedir  = '/srv/moodle/shareddata/cachedir';
-    $CFG->session_handler_class = '\core\session\redis_sentinel';
-    $CFG->session_redis_sentinel_host = 'rfs-testk8smoodle-moodle-k8s-moodle-redis.default.svc.cluster.local';
-    $CFG->session_redis_sentinel_port = 26379;
-    $CFG->session_redis_master_name = 'mymaster';
+    // $CFG->session_handler_class = '\core\session\redis_sentinel';
+    $CFG->session_handler_class = '\core\session\redis';
+    $CFG->session_redis_host = 'testk8smoodle-moodle-k8s-moodle-redis-leader.default.svc.cluster.local';
+    $CFG->session_redis_port = 6379;
+    // $CFG->session_redis_sentinel_host = 'testk8smoodle-moodle-k8s-moodle-redis-leader-.default.svc.cluster.local';
+    // $CFG->session_redis_sentinel_port = 6379;
+    // $CFG->session_redis_master_name = 'mymaster';
     $CFG->session_redis_database = 0;  // Optional, default is db 0.
     $CFG->session_redis_auth = ''; // Optional, default is don't set one.
     $CFG->session_redis_prefix = 'sess'; // Optional, default is don't set one.

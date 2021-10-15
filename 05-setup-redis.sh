@@ -4,11 +4,10 @@ if [ ! -z "$KUBECONFIG" ]; then
  exit
 fi
 
-kubectl create -f https://raw.githubusercontent.com/spotahome/redis-operator/master/example/operator/all-redis-operator-resources.yaml
-
-kubectl apply -f kubernetes/redis.yaml
-
+helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
+helm upgrade redis-operator ot-helm/redis-operator --install
 set -x
+kubectl apply -f kubernetes/rediscluster.yaml
 kubectl delete configmap testk8smoodle-moodle-k8s-moodle-config
 kubectl apply -f kubernetes/configmaps/configphp-redis.yaml
 kubectl apply -f kubernetes/phpfpm.yaml

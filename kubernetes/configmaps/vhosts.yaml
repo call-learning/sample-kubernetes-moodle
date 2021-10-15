@@ -25,9 +25,7 @@ data:
         <Directory /srv/moodle/src>
                 Options -Indexes +FollowSymLinks
                 AllowOverride None
-
                 Require all granted
-
         </Directory>
         RewriteEngine On
         RewriteCond %{SERVER_PORT} 80
@@ -41,9 +39,7 @@ data:
         <Directory /srv/moodle/src>
                 Options -Indexes +FollowSymLinks
                 AllowOverride None
-
                 Require all granted
-
         </Directory>
         LogLevel warn
 

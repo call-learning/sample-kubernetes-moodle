@@ -5,7 +5,7 @@ if [ ! -z "$KUBECONFIG" ]; then
 fi
 set -x
 kubectl delete configmap moodle-values
-kubectl create configmap moodle-values --from-literal=domain_name='https://$HOSTNAME.minikube.call-learning.io'
+kubectl create configmap moodle-values --from-literal=domain_name="https://$HOSTNAME.minikube.call-learning.io"
 kubectl delete configmap testk8smoodle-moodle-k8s-moodle-config
 kubectl apply -f kubernetes/configmaps/configphp.yaml
 kubectl delete configmap testk8smoodle-moodle-k8s-init-script
