@@ -1,0 +1,24 @@
+---
+mysql_python_package_debian: python3-mysqldb
+
+apache_mods_enabled:
+  - expires.load
+  - ssl.load
+  - rewrite.load
+  - proxy.load
+  - proxy_fcgi.load
+  - mpm_event.load  # Enable MPM Event instead of prefork
+
+apache_mods_disabled:
+  - mpm_prefork.load
+
+apache_remove_default_vhost: true
+apache_vhosts:
+  - servername: "${MOODLE_DOMAIN_NAME}"
+    serveralias: "www.${MOODLE_DOMAIN_NAME}"
+    documentroot: "{{ moodle_src_path }}"
+    extra_parameters: |
+      <FilesMatch \.php$>
+        SetHandler "proxy:fcgi://${PHP_FPM_SERVER}:${PHP_FPM_PORT}"
+      </FilesMatch>
+

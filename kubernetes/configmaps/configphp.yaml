@@ -1,0 +1,47 @@
+# Source: moodle-k8s/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: testk8smoodle-moodle-k8s-moodle-config
+  labels:
+    helm.sh/chart: moodle-k8s-0.1.0
+    app.kubernetes.io/name: moodle-k8s
+    app.kubernetes.io/instance: testk8smoodle
+    app.kubernetes.io/version: "1.0.0"
+data:
+  config.php: |-
+    <?php  // Moodle configuration fileunset($CFG);
+    global $CFG;
+    $CFG = new stdClass();
+
+    $CFG->dbtype    = 'mysqli';
+    $CFG->dblibrary = 'native';
+    $CFG->dbhost    = 'testk8smoodle-mysql-db-mysql-mysql-master.default.svc.cluster.local';
+    $CFG->dbname    = 'moodle-db';
+    $CFG->dbuser    = 'moodle-user';
+    $CFG->dbpass    = 'My@Passw0rd?%';
+    $CFG->prefix    = 'mdl_';
+    $CFG->dboptions = array (
+      'dbpersist' => 0,
+      'dbport' => '',
+      'dbsocket' => '',
+      'dbcollation' => 'utf8mb4_unicode_ci',
+    );
+
+    $CFG->admin     = 'admin';
+
+    $CFG->wwwroot   = getenv('MOODLE_DOMAIN_NAME');
+    // On the same shared NFS-HA.
+    $CFG->dataroot  = '/srv/moodle/data';
+    // On a Empty dir.
+    $CFG->localcachedir  = '/srv/moodle/localcache';
+    // On the same shared NFS-HA.
+    $CFG->tempdir  = '/srv/moodle/shareddata/tmpdir';
+    $CFG->cachedir  = '/srv/moodle/shareddata/cachedir';
+
+    $CFG->directorypermissions = 0777;
+    require_once(__DIR__ . '/lib/setup.php');
+
+    // There is no php closing tag in this file,
+    // it is intentional because it prevents trailing whitespace problems!
+

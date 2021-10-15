@@ -1,0 +1,35 @@
+# Source: moodle-k8s/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: testk8smoodle-moodle-k8s-init-script
+  labels:
+    helm.sh/chart: moodle-k8s-0.1.0
+    app.kubernetes.io/name: moodle-k8s
+    app.kubernetes.io/instance: testk8smoodle
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  init-script.sh: |-
+    #!/bin/bash
+    set -x
+    function moodle_clone() {
+        git clone --recursive $GIT_REPO --depth 1 --shallow-submodules --branch $GIT_BRANCH $SRC_DIR || true
+        chown -R www-data:www-data $SRC_DIR
+    }
+    function moodle_dirs() {
+        mkdir -p $MOODLE_LOCAL_DATA/$CACHEDIR_NAME
+        chown www-data:www-data $MOODLE_SHAREDDIR $MOODLE_DATA $MOODLE_LOCAL_DATA
+        chown www-data:www-data -R $MOODLE_LOCAL_DATA
+
+    }
+    sudo apt-get install git -y
+    while [[ "$#" -gt 0 ]]; do
+        case $1 in
+            -c|--clone) moodle_clone;;
+            -d|--dirs) moodle_dirs;;
+            *) echo "Unknown parameter passed: $1"; exit 1 ;;
+        esac
+        shift
+    done
+    exit 0

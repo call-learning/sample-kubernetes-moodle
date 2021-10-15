@@ -1,0 +1,10 @@
+---
+- name: Install python3 for Ansible
+  raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python3-minimal sudo)"
+  register: output
+  changed_when: output.stdout | length > 0
+
+- name: Update ca-certificates
+  apt:
+    name: ca-certificates
+    state: latest

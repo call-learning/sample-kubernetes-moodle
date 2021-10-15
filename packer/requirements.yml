@@ -1,0 +1,18 @@
+---
+- src: geerlingguy.repo-remi
+- src: geerlingguy.apache
+- src: nginxinc.nginx
+- src: nginxinc.nginx_config
+- src: geerlingguy.postgresql
+- src: geerlingguy.mysql
+- src: https://github.com/call-learning/ansible-role-php.git
+  name: geerlingguy.php
+  version: laurentd/conf-listen-parameters
+- src: geerlingguy.php-versions
+- src: geerlingguy.php-pgsql
+- src: geerlingguy.php-mysql
+- src: geerlingguy.git
+- src: geerlingguy.composer
+- src: https://github.com/call-learning/ansible-role-moodle.git
+  name: call-learning.moodle
+- src: geerlingguy.ntp

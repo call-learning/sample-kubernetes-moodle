@@ -1,0 +1,14 @@
+---
+apiVersion: mysql.presslabs.org/v1alpha1
+kind: MysqlCluster
+metadata:
+ name: testk8smoodle-mysql-db
+spec:
+ replicas: 1
+ secretName: moodle-db-secret
+ volumeSpec:
+   persistentVolumeClaim:
+     accessModes: ["ReadWriteOnce"]
+     resources:
+       requests:
+         storage: 2Gi

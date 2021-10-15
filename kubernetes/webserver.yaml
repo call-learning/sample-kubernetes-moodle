@@ -1,0 +1,132 @@
+---
+# Source: moodle-k8s/templates/deployments.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  testk8smoodle-moodle-k8s-webserver
+  labels:
+    helm.sh/chart: moodle-k8s-0.1.0
+    app.kubernetes.io/name: moodle-k8s
+    app.kubernetes.io/instance: testk8smoodle
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/type: webserver
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: moodle-k8s
+      app.kubernetes.io/instance: testk8smoodle
+      app.kubernetes.io/type: webserver
+  template:
+    metadata:
+      annotations:
+        checksum/config-init: 60abbfc450dc41e9affcda4778fbe1ab113a0f8b7aa4e2aa55e2916c4e4431e5
+        checksum/init-script: 732605172b390167e320d2da4b5a30da48c4c52843ccfa6f11b1bc7f67d4d605
+        checksum/config-sslc: 65faff5e12f5d5af2c587cf449c0f93138264862a5caeb7d6d6d93af534cdd74
+        checksum/config-sslk: 9b044e1d1e217b558fda92f6b8eb13f6986ffe8ec55c97c390e4aa3b9958eb2b
+      labels:
+        app.kubernetes.io/name: moodle-k8s
+        app.kubernetes.io/instance: testk8smoodle
+        app.kubernetes.io/type: webserver
+    spec:
+      serviceAccountName: testk8smoodle-moodle-k8s
+      initContainers:
+        - name: init-moodle-folders
+          image: 'calllearning/ubuntu-phpfpm-moodle:s1.0.0'
+          command: [ "/bin/bash","-c" ]
+          args: [ "init-script.sh --clone --dirs" ]
+          env:
+            - name: GIT_REPO
+              value: "https://github.com/call-learning/sample-mooodle.git"
+            - name: GIT_BRANCH
+              value: "sample/39_with_modules_redis"
+            - name: SRC_DIR
+              value: "/srv/moodle/src"
+            - name: MOODLE_LOCAL_DATA
+              value: "/srv/moodle/localcache"
+            - name: TMPDIR_NAME
+              value: "tmpdir"
+            - name: CACHEDIR_NAME
+              value: "cachedir"
+            - name: MOODLE_SHAREDDIR
+              value: "/srv/moodle/shareddata"
+            - name: MOODLE_DATA
+              value: "/srv/moodle/data"
+          volumeMounts:
+            - mountPath: "/srv/moodle/data"
+              name: data
+            - mountPath: "/srv/moodle/shareddata"
+              name: shared-temp
+            - mountPath: "/srv/moodle/localcache"
+              name: moodle-data-localcache
+            - mountPath: "/srv/moodle/src"
+              name: moodle-src-local
+            - name: init-script
+              mountPath: "/bin/init-script.sh"
+              subPath: init-script.sh
+      containers:
+        - name:  testk8smoodle-moodle-k8s-webserver
+          image: 'calllearning/ubuntu-apache-moodle:s1.0.0'
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+            - containerPort: 443
+              name: https
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+          readinessProbe:
+            tcpSocket:
+              port: http
+          env:
+            - name: MOODLE_DOMAIN_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: moodle-values
+                  key: domain_name
+          volumeMounts:
+            - mountPath: "/srv/moodle/data"
+              name: data
+            - mountPath: "/srv/moodle/shareddata"
+              name: shared-temp
+            - mountPath: "/srv/moodle/localcache"
+              name: moodle-data-localcache
+            - mountPath: "/srv/moodle/src"
+              name: moodle-src-local
+            - mountPath: "/srv/moodle/src/config.php"
+              name: config
+              subPath: config.php
+            - name: apache-vhosts
+              mountPath: /etc/apache2/sites-enabled/vhosts.conf
+              subPath: vhosts.conf
+            - name: ssl-certificates
+              mountPath: "/etc/apache2/ssl"
+              readOnly: true
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: "testk8smoodle-moodle-k8s-data"
+        - name: moodle-src-local
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: "testk8smoodle-moodle-k8s-moodle-config"
+        - name: init-script
+          configMap:
+            name: "testk8smoodle-moodle-k8s-init-script"
+            defaultMode: 511
+        - name: shared-temp
+          persistentVolumeClaim:
+            claimName: "testk8smoodle-moodle-k8s-shared-temp"
+        - name: moodle-data-localcache
+          emptyDir: {}
+        - name: apache-vhosts
+          configMap:
+            name: "testk8smoodle-moodle-k8s-apache-vhosts"
+        - name: ssl-certificates
+          secret:
+            secretName: "testk8smoodle-moodle-k8s-ssl-certificates"
+

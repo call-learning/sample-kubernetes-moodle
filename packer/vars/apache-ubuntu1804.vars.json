@@ -1,0 +1,7 @@
+{
+  "docker_image_os": "ubuntu",
+  "docker_image_os_version": "bionic",
+  "docker_image_flavor" : "apache-moodle",
+  "docker_cmd": "/usr/sbin/apache2ctl -D FOREGROUND",
+  "docker_expose": "80 443"
+}

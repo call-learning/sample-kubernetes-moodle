@@ -1,0 +1,64 @@
+---
+# Source: moodle-k8s/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: testk8smoodle-moodle-k8s-apache-vhosts
+  labels:
+    helm.sh/chart: moodle-k8s-0.1.0
+    app.kubernetes.io/name: moodle-k8s
+    app.kubernetes.io/instance: testk8smoodle
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    checksum/config: 601e492dbb281698f9a25647db7797a9650a5764f33a3a7da822c4257f508aa2
+data:
+  vhosts.conf: |-
+    DirectoryIndex index.php index.html
+    RedirectMatch 404 /\.git.+
+    RedirectMatch 404 vendor(/?|.*)$
+    RedirectMatch 404 /\.htpasswd
+
+
+    <VirtualHost *:80>
+        DocumentRoot /srv/moodle/src
+        <Directory /srv/moodle/src>
+                Options -Indexes +FollowSymLinks
+                AllowOverride None
+
+                Require all granted
+
+        </Directory>
+        RewriteEngine On
+        RewriteCond %{SERVER_PORT} 80
+        RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+        ErrorLog /proc/self/fd/1
+        TransferLog /proc/self/fd/1
+    </VirtualHost>
+
+    <VirtualHost *:443>
+        DocumentRoot /srv/moodle/src
+        <Directory /srv/moodle/src>
+                Options -Indexes +FollowSymLinks
+                AllowOverride None
+
+                Require all granted
+
+        </Directory>
+        LogLevel warn
+
+        <FilesMatch \.php$>
+          SetHandler "proxy:fcgi://testk8smoodle-moodle-k8s-phpfpm.default.svc.cluster.local:9000"
+        </FilesMatch>
+
+        SSLEngine on
+        SSLCertificateFile /etc/apache2/ssl/ssl.cer
+        SSLCertificateKeyFile /etc/apache2/ssl/ssl.key
+
+        ErrorLog /proc/self/fd/1
+        TransferLog /proc/self/fd/1
+    </VirtualHost>
+
+
+#    	ServerName moodle-minikube.local
+#    	ServerAlias www.moodle-minikube.local

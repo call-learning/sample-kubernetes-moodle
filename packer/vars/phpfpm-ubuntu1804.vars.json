@@ -1,0 +1,7 @@
+{
+  "docker_image_os": "ubuntu",
+  "docker_image_os_version": "bionic",
+  "docker_image_flavor" : "phpfpm-moodle",
+  "docker_cmd": "php-fpm7.4 -F -R",
+  "docker_expose": "9000"
+}

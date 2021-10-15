@@ -1,0 +1,79 @@
+---
+
+- name: Prebuild Image - Setup Packages for Ansible - Debian/Ubuntu
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Make sure python and sudo dependencies are installed
+      import_tasks: bootstrap.yml
+
+- name: Install locales
+  hosts: all
+  become: true
+  vars_files:
+    - vars-locales.yml
+  tasks:
+    - name: Make sure we import all locales
+      import_tasks: locales.yml
+
+- name: Prebuild Image - Moodle Apache FPM - Mysql module
+  hosts: all
+  become: true
+  vars_files:
+    - vars.yml
+    - vars-phpfpm.yml
+  pre_tasks:
+    - name: Update apt cache.
+      apt: update_cache=yes cache_valid_time=86400
+      when: ansible_os_family == 'Debian'
+    - name: Add specific packages for Ubuntu
+      apt:
+        pkg:
+          - software-properties-common
+        state: present
+      when: ansible_distribution == 'Ubuntu'
+    - name: Create src and data directory
+      include_role:
+        name: call-learning.moodle
+      vars:
+        moodle_fetch_source: false
+        moodle_run_config: false
+        moodle_setup_moosh: false
+    - name: Add PHP FPM
+      include_role:
+        name: call-learning.moodle
+        tasks_from: phpsql-setup.yml
+  roles:
+    - role: geerlingguy.repo-remi
+      when: ansible_os_family == 'RedHat'
+    # Then PHP
+    - geerlingguy.php-versions
+    - geerlingguy.php
+  post_tasks:
+    - name: Make sure that php-fpm pool logs error to stdout
+      lineinfile:
+        dest: "{{ php_fpm_conf_path }}/php-fpm.conf"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        mode: 0644
+      with_items:
+        - regexp: "^error_log.?=.+$"
+          line: "error_log=/proc/self/fd/2"
+    - name: Same for access log
+      lineinfile:
+        dest: "{{ php_fpm_pool_conf_path }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        mode: 0644
+      with_items:
+          - regexp: "^;?catch_workers_output.?=.+$"
+            line: "catch_workers_output = yes"
+          - regexp: "^;?ping.path.?=.+$"
+            line: "ping.path = /ping"
+          - regexp: "^;?pm.status_path.?=.+$"
+            line: "pm.status_path = /status"
+          - regexp: "^;?ping.response.?=.+$"
+            line: "ping.response = pong"
+

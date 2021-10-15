@@ -1,0 +1,39 @@
+---
+
+- name: Prebuild Image - Setup Packages for Ansible - Debian/Ubuntu
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Make sure python and sudo dependencies are installed
+      import_tasks: bootstrap.yml
+
+- name: Prebuild Image - Moodle Apache
+  hosts: all
+  become: true
+  vars_files:
+    - vars.yml
+    - vars-apache.yml
+  pre_tasks:
+    - name: Create src and data directory
+      include_role:
+        name: call-learning.moodle
+      vars:
+        moodle_fetch_source: false
+        moodle_run_config: false
+        moodle_setup_moosh: false
+  roles:
+    - role: geerlingguy.repo-remi
+      when: ansible_os_family == 'RedHat'
+    # Then apache
+    - geerlingguy.apache
+  post_tasks:
+    - name: Configure Apache.
+      lineinfile:
+        dest: "{{ apache_server_root }}/apache2.conf"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        mode: 0644
+      with_items:
+        - regexp: "^ErrorLog .+$"
+          line: "ErrorLog /proc/self/fd/2"

@@ -1,0 +1,37 @@
+# Source: moodle-k8s/templates/volumes.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: "testk8smoodle-moodle-k8s-data"
+  labels:
+    helm.sh/chart: moodle-k8s-0.1.0
+    app.kubernetes.io/name: moodle-k8s
+    app.kubernetes.io/instance: testk8smoodle
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "nfs"
+  resources:
+    requests:
+      storage: 500Mi
+---
+# Source: moodle-k8s/templates/volumes.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: "testk8smoodle-moodle-k8s-shared-temp"
+  labels:
+    helm.sh/chart: moodle-k8s-0.1.0
+    app.kubernetes.io/name: moodle-k8s
+    app.kubernetes.io/instance: testk8smoodle
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: "nfs"
+  resources:
+    requests:
+      storage: 500Mi

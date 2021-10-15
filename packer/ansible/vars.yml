@@ -1,0 +1,30 @@
+---
+# Web server
+moodle_webserver_user: "{{ (ansible_os_family == \"RedHat\") | ternary('apache','www-data') }}"
+moodle_webserver_group: "{{ (ansible_os_family == \"RedHat\") | ternary('apache','www-data') }}"
+
+moodle_extra_conf: []
+moodle_sitedata:
+  shared_data_folder: "/srv/moodle/shareddata"
+  local_data_folder: "/srv/moodle/localdata"
+  data_dir_name: 'sitedata'
+  temp_dir_name: 'temp'
+  cache_dir_name: 'cache'
+
+moodle_src_path: "/srv/moodle/src"
+moodle_cron_periodicity: 0  # No cron
+
+moodle_fetch_source: false
+moodle_run_config: false
+moodle_setup_moosh: false
+
+# Database details
+mysql_enablerepo: "remi"
+mysql_python_package_debian: python3-mysqldb
+dbengine: mysql
+
+# PHP Version
+php_version: '7.4'
+
+# NTP
+ntp_timezone: Europe/Paris

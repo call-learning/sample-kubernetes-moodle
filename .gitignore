@@ -1,0 +1,7 @@
+openrc.sh
+kube-config
+./secrets
+secrets/*
+.idea
+
+kubernetes/certificates

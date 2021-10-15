@@ -1,0 +1,26 @@
+---
+# Source: moodle-k8s/templates/service-lb.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: testk8smoodle-moodle-k8s-webserver
+  labels:
+    helm.sh/chart: moodle-k8s-0.1.0
+    app.kubernetes.io/name: moodle-k8s
+    app.kubernetes.io/instance: testk8smoodle
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm  # Include in $ and not . as we are in the range
+    app.kubernetes.io/type: webserver
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+  selector:
+    app.kubernetes.io/type: webserver

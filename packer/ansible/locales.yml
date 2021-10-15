@@ -1,0 +1,24 @@
+---
+- name: Make sure we have the right locales (Ubuntu)
+  apt:
+    pkg:
+      - locales-all
+      - locales
+    state: present
+  when: ansible_distribution == 'Ubuntu'
+- name: Make sure we have the right locales (Debian)
+  package:
+    name: locales
+    state: present
+  when: ansible_distribution == 'Debian'
+- name: Make sure we have the right locales (Debian and Ubuntu) by uncommenting them
+  lineinfile:
+    path: "/etc/locale.gen"
+    regexp: '^#\s+(.*{{ item }}\s+UTF-8)'
+    line: '\1'
+    backrefs: yes
+  loop: "{{ webserver_locales }}"
+  when: ansible_os_family == 'Debian'
+- name: Generate the locales and purge the unecessary ones
+  command: "locale-gen --purge"
+  when: ansible_os_family == 'Debian'
