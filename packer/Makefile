@@ -1,7 +1,7 @@
 # Makefile to build the given image
 .DEFAULT_GOAL := build
 
-DOCKER_IMAGE_VERSION ?= s1.0.0
+DOCKER_IMAGE_VERSION ?= s1.0.1
 
 apache-ubuntu1804:
 	packer build -var-file=./vars/apache-ubuntu1804.vars.json -var "docker_image_version=$(DOCKER_IMAGE_VERSION)" genericbuild-moodle.json

@@ -14,12 +14,12 @@ data:
     global $CFG;
     $CFG = new stdClass();
 
-    $CFG->dbtype    = 'mysqli';
+    $CFG->dbtype    = 'pgsql';
     $CFG->dblibrary = 'native';
-    $CFG->dbhost    = 'testk8smoodle-mysql-db-mysql-mysql-master.default.svc.cluster.local';
+    $CFG->dbhost    = 'testk8smoodle-db.default.svc.cluster.local';
     $CFG->dbname    = 'moodle-db';
     $CFG->dbuser    = 'moodle-user';
-    $CFG->dbpass    = 'My@Passw0rd?%';
+    $CFG->dbpass    = getenv('MOODLE_DATABASE_PASSWORD');
     $CFG->prefix    = 'mdl_';
     $CFG->dboptions = array (
       'dbpersist' => 0,

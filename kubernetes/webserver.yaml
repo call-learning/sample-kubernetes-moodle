@@ -33,7 +33,7 @@ spec:
       serviceAccountName: testk8smoodle-moodle-k8s
       initContainers:
         - name: init-moodle-folders
-          image: 'calllearning/ubuntu-phpfpm-moodle:s1.0.0'
+          image: 'calllearning/ubuntu-phpfpm-moodle:s1.0.1'
           command: [ "/bin/bash","-c" ]
           args: [ "init-script.sh --clone --dirs" ]
           env:
@@ -67,7 +67,7 @@ spec:
               subPath: init-script.sh
       containers:
         - name:  testk8smoodle-moodle-k8s-webserver
-          image: 'calllearning/ubuntu-apache-moodle:s1.0.0'
+          image: 'calllearning/ubuntu-apache-moodle:s1.0.1'
           ports:
             - containerPort: 80
               name: http
@@ -87,6 +87,11 @@ spec:
                 configMapKeyRef:
                   name: moodle-values
                   key: domain_name
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-user.testk8smoodle-db.credentials.postgresql.acid.zalan.do
+                  key: password
           volumeMounts:
             - mountPath: "/srv/moodle/data"
               name: data

@@ -8,7 +8,13 @@ kubectl create -f https://raw.githubusercontent.com/spotahome/redis-operator/mas
 
 kubectl apply -f kubernetes/redis.yaml
 
+set -x
 kubectl delete configmap testk8smoodle-moodle-k8s-moodle-config
 kubectl apply -f kubernetes/configmaps/configphp-redis.yaml
+kubectl apply -f kubernetes/phpfpm.yaml
+kubectl apply -f kubernetes/webserver.yaml
+
+kubectl rollout restart deployment testk8smoodle-moodle-k8s-webserver
+kubectl rollout restart deployment testk8smoodle-moodle-k8s-phpfpm
 
 

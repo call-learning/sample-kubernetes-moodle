@@ -1,14 +1,20 @@
 ---
-apiVersion: mysql.presslabs.org/v1alpha1
-kind: MysqlCluster
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
 metadata:
- name: testk8smoodle-mysql-db
+  name: testk8smoodle-db
+  namespace: default
 spec:
- replicas: 1
- secretName: moodle-db-secret
- volumeSpec:
-   persistentVolumeClaim:
-     accessModes: ["ReadWriteOnce"]
-     resources:
-       requests:
-         storage: 2Gi
+  teamId: "testk8smoodle"
+  volume:
+    size: 1Gi
+  numberOfInstances: 2
+  users:
+    moodle-user:  # database owner
+    - createdb
+  databases:
+    moodle-db: moodle-user  # dbname: owner
+  preparedDatabases:
+    bar: {}
+  postgresql:
+    version: "10"
