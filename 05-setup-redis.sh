@@ -7,11 +7,9 @@ fi
 helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
 helm upgrade redis-operator ot-helm/redis-operator --install
 set -x
-kubectl apply -f kubernetes/rediscluster.yaml
+kubectl apply -f kubernetes/redisstandalone.yaml
 kubectl delete configmap testk8smoodle-moodle-k8s-moodle-config
 kubectl apply -f kubernetes/configmaps/configphp-redis.yaml
-kubectl apply -f kubernetes/phpfpm.yaml
-kubectl apply -f kubernetes/webserver.yaml
 
 kubectl rollout restart deployment testk8smoodle-moodle-k8s-webserver
 kubectl rollout restart deployment testk8smoodle-moodle-k8s-phpfpm

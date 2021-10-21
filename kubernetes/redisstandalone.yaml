@@ -1,10 +1,9 @@
 ---
 apiVersion: redis.redis.opstreelabs.in/v1beta1
-kind: RedisCluster
+kind: Redis
 metadata:
   name: testk8smoodle-moodle-k8s-moodle-redis
 spec:
-  clusterSize: 3
   kubernetesConfig:
     image: quay.io/opstree/redis:v6.2.5
     imagePullPolicy: IfNotPresent
@@ -27,3 +26,4 @@ spec:
       limits:
         cpu: 100m
         memory: 128Mi
+  redisConfig: {}
